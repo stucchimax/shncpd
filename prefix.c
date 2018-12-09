@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <assert.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 #include "shncpd.h"
 #include "trickle.h"
 #include "state.h"

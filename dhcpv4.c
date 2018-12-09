@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <assert.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
 #include <net/if.h>
 
 #include "shncpd.h"
@@ -194,7 +195,7 @@ setup_dhcpv4_socket()
     if(rc < 0)
         goto fail;
 
-    rc = setsockopt(s, IPPROTO_IP, IP_PKTINFO, &one, sizeof(one));
+    rc = setsockopt(s, IPPROTO_IP, IP_RECVDSTADDR, &one, sizeof(one));
     if(rc < 0)
         goto fail;
 
@@ -521,7 +522,7 @@ dhcpv4_send(int s, struct sockaddr_in *to, int dontroute,
 
     memset(&ifr, 0, sizeof(ifr));
     if_indextoname(ifindex, ifr.ifr_name);
-    rc = setsockopt(dhcpv4_socket, SOL_SOCKET, SO_BINDTODEVICE,
+    rc = setsockopt(dhcpv4_socket, SOL_SOCKET, IP_RECVIF,
                     &ifr, sizeof(ifr));
     if(rc < 0)
         return -1;
@@ -529,7 +530,7 @@ dhcpv4_send(int s, struct sockaddr_in *to, int dontroute,
     rc = sendto(dhcpv4_socket, buf, i, dontroute ? MSG_DONTROUTE : 0,
                 (struct sockaddr*)to, sizeof(*to));
 
-    setsockopt(dhcpv4_socket, SOL_SOCKET, SO_BINDTODEVICE, NULL, 0);
+    setsockopt(dhcpv4_socket, SOL_SOCKET, IP_RECVIF, NULL, 0);
     return rc;
 
  fail:
@@ -653,9 +654,9 @@ dhcpv4_receive()
     cmsg = CMSG_FIRSTHDR(&msg);
     while(cmsg != NULL) {
         if ((cmsg->cmsg_level == IPPROTO_IP) &&
-            (cmsg->cmsg_type == IP_PKTINFO)) {
-            struct in_pktinfo *info = (struct in_pktinfo*)CMSG_DATA(cmsg);
-            ifindex = info->ipi_ifindex;
+            (cmsg->cmsg_type == IP_RECVSTADDR)) {
+            struct in_pktinfo *info = (struct in6_pktinfo*)CMSG_DATA(cmsg);
+            ifindex = info->ipi6_ifindex;
             break;
         }
         cmsg = CMSG_NXTHDR(&msg, cmsg);

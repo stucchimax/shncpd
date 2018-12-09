@@ -29,6 +29,8 @@ THE SOFTWARE.
 #include <time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
 #include "util.h"
 #include "kernel.h"
 
@@ -138,28 +140,14 @@ kernel_route(int ifindex, const char *ifname,
 int
 kernel_router()
 {
-    char buf[100];
-    int fd, rc;
-    int router;
+    int rc;
+		int forwarding;
+		size_t len = sizeof(int);
 
-    fd = open("/proc/sys/net/ipv6/conf/all/forwarding", O_RDONLY);
-    if(fd < 0)
+		sysctlbyname("net.inet6.ip6.forwarding", &forwarding, &len, NULL, 0);
+    if(forwarding == 0)
         return -1;
 
-    rc = read(fd, buf, 99);
-    if(rc < 0) {
-        close(fd);
-        return -1;
-    }
-    close(fd);
-
-    buf[rc] = '\0';
-
-    router = atoi(buf);
-
-    if(!router)
-        return 0;
-
-    rc = system("ip -6 route show | grep -q '^default '");
+    rc = system("netstat -rn -f inet6 | grep -q '^default '");
     return WIFEXITED(rc) && WEXITSTATUS(rc) == 1 ? 1 : 2;
 }

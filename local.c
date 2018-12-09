@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <netinet/in.h>

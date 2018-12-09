@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <string.h>
 #include <arpa/inet.h>
 #include <assert.h>
+#include <netinet/in.h>
 
 #include "shncpd.h"
 #include "trickle.h"
