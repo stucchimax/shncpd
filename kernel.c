@@ -53,8 +53,8 @@ kernel_address(int ifindex, const char *ifname,
         inet_ntop(AF_INET6, address, b, sizeof(b));
     }
 
-    rc = snprintf(c, sizeof(c), "ip addr %s %s/%d dev %s",
-                  add ? "add" : "del", b, plen, ifname);
+    rc = snprintf(c, sizeof(c), "ifconfig %s inet6 %s %s/%d ", ifname
+                  add ? "add" : "delete", b, plen);
     if(rc < 1 || rc >= sizeof(c)) {
         errno = ENOSPC;
         return -1;
