@@ -114,13 +114,13 @@ kernel_route(int ifindex, const char *ifname,
 
     if(src)
         rc = snprintf(cmd, sizeof(cmd),
-                      "ip route %s%s %s/%d%s from %s/%d%s proto 43",
-                      add ? "add" : "del", type, to, dlen, metric,
+                      "route %s%s %s/%d%s from %s/%d%s -proto 43",
+                      add ? "add" : "delete", type, to, dlen, metric,
                       from, slen, iface);
     else
         rc = snprintf(cmd, sizeof(cmd),
-                      "ip route %s%s %s/%d%s%s proto 43",
-                      add ? "add" : "del", type, to, dlen, metric, iface);
+                      "route %s%s %s/%d%s%s -proto 43",
+                      add ? "add" : "delete", type, to, dlen, metric, iface);
     if(rc < 1 || rc >= sizeof(cmd)) {
         errno = ENOSPC;
         return -1;
