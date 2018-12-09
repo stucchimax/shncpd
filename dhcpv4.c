@@ -654,7 +654,7 @@ dhcpv4_receive()
     cmsg = CMSG_FIRSTHDR(&msg);
     while(cmsg != NULL) {
         if ((cmsg->cmsg_level == IPPROTO_IP) &&
-            (cmsg->cmsg_type == IP_RECVSTADDR)) {
+            (cmsg->cmsg_type == IP_RECVDSTADDR)) {
             struct in6_pktinfo *info = (struct in6_pktinfo*)CMSG_DATA(cmsg);
             ifindex = info->ipi6_ifindex;
             break;
